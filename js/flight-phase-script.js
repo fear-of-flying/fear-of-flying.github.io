@@ -1,8 +1,26 @@
+var svg = d3.select('svg');
+
+var svgWidth = +svg.attr('width');
+var svgHeight = +svg.attr('height');
+
+var padding = {t: 20, r: 40, b: 40, l: 200};
+
+var barChartWidth = 300;
+var barChartHeight = 250;
+
+var barX = d3.scaleLinear().range([120, 290]);
+
+var barXAxis = d3.axisBottom(barX)
+    .ticks(6);
+
+var chartG = svg.append('g')
+    .attr('transform', 'translate('+[padding.l, padding.t]+')');
+
 d3.csv('./aircraft_incidents.csv',
     function(d) {
         return {
     		accident_number: d['Accident_Number'],
-            data: d['Event_Date'],
+            date: d['Event_Date'],
     		make: d['Make'],
     		model: d['Model'],
     		airline: d['Air_Carrier'],
@@ -23,4 +41,21 @@ d3.csv('./aircraft_incidents.csv',
         incidents = dataset;
 
         console.log(incidents);
+
+        var totalInjuries = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .rollup(function(v) {
+                return d3.sum(v, function(d) {
+                    return d.fatal_injuries;
+                });
+            })
+            .entries(incidents);
+
+        console.log(totalInjuries);
+
+        // var bars = cell.selectAll('.bars')
+        //     .data(totalInjuries[])
+
     });

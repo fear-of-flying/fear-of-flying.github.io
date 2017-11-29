@@ -1,4 +1,4 @@
-var svg = d3.select("#main svg");
+var svg = d3.select("#make_model svg");
 
 
 // Get layout parameters

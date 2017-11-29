@@ -10,6 +10,8 @@ padding = {t:20, l:100, r:20, b:20};
 var chartG = svg.append('g')
 	.attr('transform', 'translate('+[padding.l, padding.t]+')');
 
+var active = -1;
+
 
 d3.csv("./aircraft_incidents.csv", 
 	function(d,i){
@@ -94,6 +96,16 @@ function makeBins(d) {
 }
 
 function expandMake(make,i) {
+	chartG.selectAll('.modelText').remove();
+	chartG.selectAll('.modelTextBox').remove();
+
+	if (active == i) {
+		active = -1;
+		closeMake();
+		return;
+	}
+
+	active = i;
 	models = d3.map(d3.nest()
 		.key(function(d) {return d.make})
 		.entries(data)[i].values,
@@ -101,6 +113,7 @@ function expandMake(make,i) {
 
 	var push = models.length * 30;
 
+	//reset counts for histogram
 	make_count = {};
 	model_count = {};
 
@@ -108,6 +121,7 @@ function expandMake(make,i) {
 		.domain([0,models.length])
 		.range([yScale(i)+30, yScale(i)+push]);
 
+	//transition bars
 	var squares = chartG.selectAll('.square')
 		.transition()
     	.duration(750)
@@ -117,11 +131,11 @@ function expandMake(make,i) {
 				? t[1] + push : t[1]]+')'
 		});
 
+	//move labels
 	var textBoxes = chartG.selectAll('.textBox')
 		.transition()
     	.duration(750)
 		.attr('transform', function(d,idx) {
-			console.log(d);
 			return 'translate('+[-d.length*9-7, idx > i ? yScale(idx)-4.5 +  push : yScale(idx)-4.5]+')'
 		});
 
@@ -129,8 +143,46 @@ function expandMake(make,i) {
 		.transition()
     	.duration(750)
 		.attr('transform', function(d,idx) {
-			console.log(d);
 			return 'translate('+[-10, idx > i ? yScale(idx) + 10 +  push : yScale(idx) + 10]+')'
+		});
+
+
+	//make labels for models
+	var modelNode = chartG.selectAll('.modelNode')
+			.data(models);
+			
+	var modelNodeEnter = modelNode.enter().append('rect')
+		.attr('class', 'modelTextBox')
+		.style('fill', '#ffffff')
+		.attr('stroke-width', 0.1)
+		.style('stroke', '#000000')
+		.attr('width', function(d) {return d.length*9})
+		.attr('height', '20')
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-10, yScale(i) + 30]+')'
+		});
+
+	modelNodeEnter
+		.transition()
+    	.duration(750)
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-d.length*9-7, modelYScale(idx)-4.5]+')'
+		});
+
+		
+	var modelNodeEnter = modelNode.enter().append('text')
+		.attr('class', 'modelText')
+		.text(function(d) {return d;})
+		.attr('text-anchor', 'end')
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-10, yScale(i) + 30]+')'
+		})
+
+	modelNodeEnter
+		.transition()
+    	.duration(750)
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-10, modelYScale(idx) + 10]+')'
 		});
 
 
@@ -152,4 +204,33 @@ function modelBins(d) {
 	}
 	
 	return [x,y]
+}
+
+function closeMake() {
+	//reset counts for histogram
+	make_count = {};
+
+	//transition bars
+	var squares = chartG.selectAll('.square')
+		.transition()
+    	.duration(750)
+		.attr('transform', function(d) {
+			var t = makeBins(d);
+			return 'translate('+[t[0], t[1]]+')'
+		});
+
+	//move labels
+	var textBoxes = chartG.selectAll('.textBox')
+		.transition()
+    	.duration(750)
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-d.length*9-7, yScale(idx)-4.5]+')'
+		});
+
+	var makeTexts = chartG.selectAll('.makeText')
+		.transition()
+    	.duration(750)
+		.attr('transform', function(d,idx) {
+			return 'translate('+[-10, yScale(idx) + 10]+')'
+		});
 }

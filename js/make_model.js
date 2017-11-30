@@ -11,7 +11,7 @@ var chartG = svg.append('g')
 	.attr('transform', 'translate('+[padding.l, padding.t]+')');
 
 
-d3.csv("./aircraft_incidents.csv", 
+d3.csv("./aircraft_incidents.csv",
 	function(d,i){
 		return {
 			severity: d['Injury_Severity'],
@@ -27,17 +27,17 @@ d3.csv("./aircraft_incidents.csv",
 		if (error) {console.log(error);}
 
 		data = dataset;
-		
+
 		makes = d3.map(dataset, function(d) {return d.make;}).keys();
 		chartWidth = svgWidth/2;
 		xScale = d3.scaleLinear()
 			.domain([0, 1215])
 			.range([0, chartWidth]);
-			
+
 		yScale = d3.scaleLinear()
 			.domain([0, makes.length])
 			.range([0, svgHeight/2]);
-		
+
 		var squares = chartG.selectAll('.square')
 			.data(data);
 		var squaresEnter = squares.enter()
@@ -52,10 +52,10 @@ d3.csv("./aircraft_incidents.csv",
 				var t = makeBins(d);
 				return 'translate('+[t[0], t[1]]+')'
 			});
-			
+
 		var textNode = chartG.selectAll('.textNode')
 			.data(makes);
-			
+
 		textNode.enter().append('rect')
 			.attr('class', 'textBox')
 			.style('fill', '#ffffff')
@@ -67,7 +67,7 @@ d3.csv("./aircraft_incidents.csv",
 				return 'translate('+[-d.length*9-7, yScale(i)-4.5]+')'
 			})
 			.on('click', function(d,i) {expandMake(d,i)});
-			
+
 		textNode.enter().append('text')
 			.attr('class', 'makeText')
 			.text(function(d) {return d;})
@@ -77,11 +77,11 @@ d3.csv("./aircraft_incidents.csv",
 			})
 			.on('click', function(d,i) {expandMake(d,i)});
 	});
-	
+
 var make_count = {};
 function makeBins(d) {
 	var y = yScale(makes.indexOf(d.make));
-	
+
 	if (y in make_count) {
 				make_count[y] ++;
 				x = xScale(make_count[y]);
@@ -89,7 +89,7 @@ function makeBins(d) {
 				make_count[y] = 0;
 				x = xScale(0);
 			}
-	
+
 	return [x,y]
 }
 
@@ -98,6 +98,8 @@ function expandMake(make,i) {
 		.key(function(d) {return d.make})
 		.entries(data)[i].values,
 		function(d) {return d.model}).keys();
+
+	console.log(models);
 
 	var push = models.length * 30;
 
@@ -113,7 +115,7 @@ function expandMake(make,i) {
     	.duration(750)
 		.attr('transform', function(d) {
 			var t = modelBins(d);
-			return 'translate('+[t[0], makes.indexOf(d.make) > i 
+			return 'translate('+[t[0], makes.indexOf(d.make) > i
 				? t[1] + push : t[1]]+')'
 		});
 
@@ -142,7 +144,7 @@ function modelBins(d) {
 	if (y == -1) {return makeBins(d);}
 
 	y = modelYScale(y);
-	
+
 	if (y in model_count) {
 		model_count[y] ++;
 		x = xScale(model_count[y]);
@@ -150,6 +152,6 @@ function modelBins(d) {
 		model_count[y] = 0;
 		x = xScale(0);
 	}
-	
+
 	return [x,y]
 }

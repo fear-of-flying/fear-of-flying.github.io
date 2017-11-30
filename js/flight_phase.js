@@ -63,22 +63,68 @@ d3.csv('./aircraft_incidents.csv',
 
         incidents = dataset;
 
-        console.log(incidents);
-
-        var totalInjuries = d3.nest()
+        var phaseData = d3.nest()
             .key(function(d) {
-                return d.phase;
-            })
-            .rollup(function(v) {
-                return d3.sum(v, function(d) {
-                    return d.fatal_injuries;
-                });
+                if (d.phase != "OTHER"
+                        && d.phase != "UNKNOWN"
+                        && d.phase != ""
+                        && d.phase != null) {
+                            return d.phase;
+                        }
             })
             .entries(incidents);
 
-        console.log(totalInjuries);
+        phaseData.sort(function(a, b) {
+            return b.phase - a.phase;
+        });
 
-        // var bars = cell.selectAll('.bars')
-        //     .data(totalInjuries[])
+        console.log(phaseData);
+
+        var fatalData = incidents.filter(function(d) {
+            if (d.severity != "Unavailable"
+                    && d.severity != "Non-Fatal"
+                    && d.severity != "Incident"
+                    && d.severity != ""
+                    && d.phase != null) {
+                return d;
+            }
+        });
+
+        // just hardcode keys here in order of flight phase
+        var phaseDataKeys = [];
+
+        console.log(phaseDataKeys);
+
+        console.log(d3.entries(phaseData));
+        console.log(fatalData.length);
+
+        var fatalPerPhase = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .entries(fatalData);
+
+        console.log(fatalPerPhase);
+
+        var bars = d3.select(chartG);
+
+        // bars.append('rect')
+        //     .attr('class', 'bar-chart-container')
+        //     .attr('width', barChartWidth)
+        //     .attr('height', barChartHeight)
+        //     .style('fill', 'white')
+        //     .style('.stroke-width', 2)
+        //     .style('stroke', '#efefef');
+
+        bars.selectAll('.bars')
+            .data(phaseData)
+            .enter();
+
+        bars.append('rect')
+            .attr('x', 10)
+            .attr('y', -10.5)
+            .attr('height', 6)
+            .attr('width', 50)
+            .attr('fill', 'blue');
 
     });

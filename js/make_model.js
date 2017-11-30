@@ -152,14 +152,12 @@ function expandMake(make,i) {
 	for(var j = 0; j < models.length; j++) {
 		var img = chartG.append('image')
 		.attr('class', 'plane_img')
-		.attr('xlink:href', '/img/'+models[j]+'.PNG')
-		.attr('transform', 'scale(0.5,0.5) translate('+[-100, yScale(i)]+')')
+		.attr('xlink:href', 'https://raw.githubusercontent.com/fear-of-flying/fear-of-flying.github.io/master/img/'+models[j]+'.png')
+		.attr('transform', 'scale(0.5,0.5) translate('+[-100, yScale(i)]+')');
 
 		img.transition()
     	.duration(750)
-    	.attr('transform', 'scale(0.5,0.5) translate('+[-100, 20 + 2*modelYScale(j)-4.5]+')')
-		// .attr('y', 20 + 2*modelYScale(j)-4.5)
-		// .attr('x', -100);
+    	.attr('transform', 'scale(0.5,0.5) translate('+[-100, 20 + 2*modelYScale(j)-4.5]+')');
 	}
 
 	//make labels for models
@@ -173,7 +171,6 @@ function expandMake(make,i) {
 		.attr('transform', function(d,idx) {
 			return 'translate('+[-d.length*9 + 80, yScale(i)-4.5]+')'
 		})
-		.on('click', function(d,i) {expandMake(d,i)});
 			
 	modelNode.append('rect')
 		.style('fill', '#ffffff')

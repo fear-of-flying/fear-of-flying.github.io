@@ -152,7 +152,7 @@ function expandMake(make,i) {
 	for(var j = 0; j < models.length; j++) {
 		var img = chartG.append('image')
 		.attr('class', 'plane_img')
-		.attr('xlink:href', 'img/'+models[j]+'.PNG')
+		.attr('xlink:href', '/img/'+models[j]+'.PNG')
 		.attr('transform', 'scale(0.5,0.5) translate('+[-100, yScale(i)]+')')
 
 		img.transition()

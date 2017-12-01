@@ -7,10 +7,10 @@ var svgHeight = +svg.attr('height');
 
 padding = {t:20, l:100, r:20, b:20};
 
-var chartG = svg.append('g')
+var makeChartG = svg.append('g')
 	.attr('transform', 'translate('+[padding.l, padding.t]+')');
 
-var squaresG = chartG.append('g')
+var squaresG = makeChartG.append('g')
 	.attr('transform', 'translate('+[padding.l, 0]+')');
 
 var active = -1;
@@ -73,7 +73,7 @@ d3.csv("./aircraft_incidents.csv",
 				return 'translate('+[t[0], t[1]]+')'
 			});
 
-		var textNode = chartG.selectAll('g textNode')
+		var textNode = makeChartG.selectAll('g textNode')
 			.data(makes)
 
 		var textNode = textNode.enter()
@@ -100,7 +100,7 @@ d3.csv("./aircraft_incidents.csv",
 				return 'translate('+[d.length*8.7, 15]+')'
 			});
 
-		var countNode = chartG.selectAll('g countNode')
+		var countNode = makeChartG.selectAll('g countNode')
 			.data(makes);
 
 		countNode = countNode.enter()
@@ -163,9 +163,9 @@ function updateDescription() {
 }
 
 function expandMake(make,i) {
-	chartG.selectAll('.modelNode').remove();
-	chartG.selectAll('.plane_img').remove();
-	chartG.selectAll('.modelCountNode').remove();
+	makeChartG.selectAll('.modelNode').remove();
+	makeChartG.selectAll('.plane_img').remove();
+	makeChartG.selectAll('.modelCountNode').remove();
 
 	if (active == i) {
 		active = -1;
@@ -204,7 +204,7 @@ function expandMake(make,i) {
 
 	//move labels
 
-	var textNode = chartG.selectAll('.textNode')
+	var textNode = makeChartG.selectAll('.textNode')
 		.transition()
     	.duration(500)
 		.attr('transform', function(d,idx) {
@@ -212,7 +212,7 @@ function expandMake(make,i) {
 		});
 
 
-	var countNode = chartG.selectAll('.countNode')
+	var countNode = makeChartG.selectAll('.countNode')
 		.transition()
     	.duration(750)
 		.attr('transform', function(d,idx) {
@@ -223,7 +223,7 @@ function expandMake(make,i) {
 
 	//plane images
 	for(var j = 0; j < models.length; j++) {
-		var img = chartG.append('image')
+		var img = makeChartG.append('image')
 		.attr('class', 'plane_img')
 		.attr('xlink:href', 'https://raw.githubusercontent.com/fear-of-flying/fear-of-flying.github.io/master/img/'+models[j]+'.png')
 		.attr('transform', 'scale(0.5,0.5) translate('+[-100, yScale(i)]+')');
@@ -234,7 +234,7 @@ function expandMake(make,i) {
 	}
 
 	//make labels for models
-	var modelNode = chartG.selectAll('g modelNode')
+	var modelNode = makeChartG.selectAll('g modelNode')
 			.data(models)
 
 	var modelNode = modelNode.enter()
@@ -258,7 +258,7 @@ function expandMake(make,i) {
 			return 'translate('+[d.length*8.7, 15]+')'
 		});
 
-	var countNode = chartG.selectAll('g modelCountNode')
+	var countNode = makeChartG.selectAll('g modelCountNode')
 		.data(models);
 
 	countNode = countNode.enter()
@@ -312,7 +312,7 @@ function closeMake() {
 	make_count = {};
 
 	//transition bars
-	var squares = chartG.selectAll('.square')
+	var squares = makeChartG.selectAll('.square')
 		.transition()
     	.duration(750)
 		.attr('transform', function(d) {
@@ -321,14 +321,14 @@ function closeMake() {
 		});
 
 	//move labels
-	var textNode = chartG.selectAll('.textNode')
+	var textNode = makeChartG.selectAll('.textNode')
 		.transition()
     	.duration(750)
 		.attr('transform', function(d,idx) {
 			return 'translate('+[-d.length*9 + 80, yScale(idx)-4.5]+')'
 		});
 
-	var countNode = chartG.selectAll('.countNode')
+	var countNode = makeChartG.selectAll('.countNode')
 		.transition()
     	.duration(750)
 		.attr('transform', function(d,i) {

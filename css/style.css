@@ -7,9 +7,6 @@
   opacity: 0.2;
 }
 
-img.leaflet-tile{
-    pointer-events: none;
-}
 
 rect.bordered {
   stroke: #E6E6E6;

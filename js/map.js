@@ -24,18 +24,6 @@ var svg = d3.select('#map').select('svg');
 var nodeLinkG = svg.select('g')
     .attr('class', 'leaflet-zoom-hide');
 
-var toolTip = d3.tip()
-    .attr("class", "d3-tip")
-    .offset([-12, 0])
-    .html(function(d) {
-        return "<h5>"+d.accident_number+"</h5><table><thead><tr><td>0-60 mph (s)</td><td>Power (hp)</td><td>Cylinders</td><td>Year</td></tr></thead>"
-             + "<tbody><tr><td>"+d.accident_number+"</td><td>"+d.accident_number+"</td><td>"+d.accident_number+"</td><td>"+d.accident_number+"</td></tr></tbody>"
-             + "<thead><tr><td>Economy (mpg)</td><td colspan='2'>Displacement (cc)</td><td>Weight (lb)</td></tr></thead>"
-             + "<tbody><tr><td>"+d.accident_number+"</td><td colspan='2'>"+d.accident_number+"</td><td>"+d.accident_number+"</td></tr></tbody></table>"
-    });
-    
-svg.call(toolTip);
-
 d3.csv('./aircraft_incidents.csv',
     function(d) {
         return {
@@ -50,7 +38,8 @@ d3.csv('./aircraft_incidents.csv',
             fatal_injuries: +d['Total_Fatal_Injuries'],
             serious_injuries: +d['Total_Serious_Injuries'],
             uninjured: +d['Total_Uninjured'],
-            LatLng: [+d['Latitude'], +d['Longitude']]
+            LatLng: [+d['Latitude'], +d['Longitude']],
+            location: [d['Location']]
         };
     }, function(error, dataset) {
         if (error) {
@@ -59,31 +48,30 @@ d3.csv('./aircraft_incidents.csv',
         }
         data = dataset;
 
-        // for (var i =0; i < data.length; i++) {
-        //     d = data[i];
-        //     var circle = L.circle(d.LatLng, {
-        //         // fillColor: '#ffffff',
-        //         // color: (d.severity.substring(0,5) == 'Fatal' ? '#800000'
-        //         // : d.severity == 'Incident' ? "#ffc61a" : "#e67300"),
-        //         // fillOpacity: 0.4,
-        //         radius: 4 + ((d.fatal_injuries / 349) * 12) + ((d.serious_injuries / 349) * 12)
-        //     }).addTo(myMap);
+        for (var i =0; i < data.length; i++) {
+            var d = data[i];
 
-        //     console.log(circle.getRadius());
-        // }
+            //unknown lat long
+            if (d.LatLng[0] == 0 && d.LatLng[1] == 0)
+                continue;
 
-        nodeLinkG.selectAll('.grid-node')
-            .data(data)
-            .enter().append('circle')
-            .attr('class', 'grid-node')
-            .style('fill', function(d) {return d.severity.substring(0,5) == 'Fatal' ? '#800000'
-                : d.severity == 'Incident' ? "#ffc61a" : "#e67300"})
-            .style('stroke', '#ffffff')
-            .style('fill-opacity', 0.4)
-            .attr('r', function(d) {return 4 + ((d.fatal_injuries / 349) * 12) + ((d.serious_injuries / 349) * 12)})
-            .on('click', console.log('b'));
-            // .on('mouseover', console.log('hi'))
-            // .on('mouseout', toolTip.hide);
+            var size = 10 + 2* (((d.fatal_injuries / 349) * 12) + ((d.serious_injuries / 349) * 12));
+
+            var myIcon = L.icon({
+                iconUrl: (d.severity.substring(0,5) == 'Fatal' ? '/img/red.png'
+                    : d.severity == '/img/yellow.png' ? "#ffc61a" : "/img/orange.png"),
+                iconSize: [size, size]
+            });
+
+            L.marker(d.LatLng, {icon: myIcon}).addTo(myMap).bindPopup("<h5>"+d.location+"</h5><table><thead>"
+             + "<tr><td align=\"right\"><b>Date | </b></td><td>"+d.date+"</td></tr></thead>"
+             + "<tbody><tr><td align=\"right\"><b>Make & Model | </b></td><td>"+d.make+" "+d.model+"</td></tr></tbody>"
+             + "<tbody><tr><td align=\"right\"><b>Airline | </b></td><td>"+(d.airline == "" ? "Unknown" : d.airline)+"</td></tr></tbody>"
+             
+             + "<tbody><tr><td align=\"right\"><b>Total Fatalities | </b></td><td>"+d.fatal_injuries+"</td></tr></tbody>"
+             + "<tbody><tr><td align=\"right\"><b>Total Injured | </b></td><td>"+d.serious_injuries+"</td></tr></tbody>"
+             + "<tbody><tr><td align=\"right\"><b>Aircraft Damage | </b></td><td>"+(d.damage == "" ? "Unknown" : d.damage)+"</td></tr></tbody></table>");
+        }
 
         myMap.on('zoomend', updateLayers);
         updateLayers();

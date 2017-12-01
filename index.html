@@ -9,16 +9,36 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+	<div class = "jumbotron">
+		<h1 align="center">Afraid of Flying?</h1>
+		<p align="center">The probability of a plane crash is about one per 1.2 million flights, so its pretty unlikely you'll be in one. Regardless, we looked at almost 2000 accidents to examine what factors make it more likely.</p>
+	</div>
+	
+	<div class = "jumbotron">
+		<h3 align="center">Make and Model of Aircraft</h3>
+		<p id="make_model_p" align="center"></p>
+	</div>
+
     <div id="make_model">
         <svg width="1000" height="900" ></svg>
     </div>
+	
+	<div class = "jumbotron">
+		<h3 align="center">Phase of the Flight</h3>
+		<p id="flight_phase_p" align="center"></p>
+	</div>
 
 	<div id="flight_phase">
         <svg width="1000" height="680" style="border: 1px solid #777;"></svg>
     </div>
 	
+	<div class = "jumbotron">
+		<h3 align="center">Where in the World?</h3>
+		<p id="map_p" align="center"></p>
+	</div>
+	
 	<div id="main">
-        <div id="map" style="height: 640px; width: 1000px;"></div>
+        <div id="map" style="height: 640px; width: 100%;"></div>
     </div>
 	
 </body>

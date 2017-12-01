@@ -49,7 +49,7 @@ d3.csv("./aircraft_incidents.csv",
 			else
 				return 0;
 		});
-		
+
 		makes = d3.map(data, function(d) {return d.make;}).keys();
 		chartWidth = svgWidth/2;
 		xScale = d3.scaleLinear()
@@ -125,7 +125,7 @@ d3.csv("./aircraft_incidents.csv",
 
 		countNode = countNode.enter()
 			.append('text')
-			.attr('class', 'countNode')	
+			.attr('class', 'countNode')
 			.text(function(d,i) {return +make_count[yScale(i)] + 1;})
 			.attr('transform', function(d,i) {
 				y = yScale(i);
@@ -202,13 +202,11 @@ function expandMake(make,i) {
 		.entries(data)[i].values,
 		function(d) {return d.model}).keys();
 
-<<<<<<< HEAD
 	console.log(models);
 
 	var push = models.length * 30;
 =======
 	var push = models.length * 60 + 50;
->>>>>>> master
 
 	//reset counts for histogram
 	make_count = {};
@@ -289,7 +287,7 @@ function expandMake(make,i) {
 
 	countNode = countNode.enter()
 		.append('text')
-		.attr('class', 'modelCountNode')	
+		.attr('class', 'modelCountNode')
 		.text(function(d,i) {return +model_count[modelYScale(i)] + 1;})
 		.attr('transform', function(d,idx) {
 			y = yScale(i);

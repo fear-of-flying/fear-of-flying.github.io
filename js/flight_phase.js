@@ -322,10 +322,10 @@ d3.csv('./aircraft_incidents.csv',
                       .attr('transform', 'translate('+[25, 200]+')');
 
                 svg.append('text')
-                      .text("% of Fatal Injuries")
+                      .text("% of Serious Injuries")
                       .style('font-size', '12')
                       .style('font-weight', 500)
-                      .attr('transform', 'translate('+[25, 275]+')');
+                      .attr('transform', 'translate('+[12, 275]+')');
 
                 svg.append('text')
                     .text(phases[0])

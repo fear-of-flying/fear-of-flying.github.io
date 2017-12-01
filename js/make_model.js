@@ -16,7 +16,7 @@ var squaresG = chartG.append('g')
 var active = -1;
 
 
-d3.csv("./aircraft_incidents.csv", 
+d3.csv("./aircraft_incidents.csv",
 	function(d,i){
 		return {
 			severity: d['Injury_Severity'],
@@ -32,18 +32,22 @@ d3.csv("./aircraft_incidents.csv",
 		if (error) {console.log(error);}
 
 		data = dataset;
-		
+
 		makes = d3.map(dataset, function(d) {return d.make;}).keys();
 		chartWidth = svgWidth/2;
 		xScale = d3.scaleLinear()
 			.domain([0, 1215])
 			.range([0, chartWidth]);
-			
+
 		yScale = d3.scaleLinear()
 			.domain([0, makes.length-1])
 			.range([0, svgHeight/5]);
 		
 		var squares = squaresG.selectAll('.square')
+			.domain([0, makes.length])
+			.range([0, svgHeight/2]);
+
+		var squares = chartG.selectAll('.square')
 			.data(data);
 		var squaresEnter = squares.enter()
 			.append('rect')
@@ -71,6 +75,11 @@ d3.csv("./aircraft_incidents.csv",
 
 
 		textNode.append('rect')
+
+		var textNode = chartG.selectAll('.textNode')
+			.data(makes);
+
+		textNode.enter().append('rect')
 			.attr('class', 'textBox')
 			.style('fill', '#c1f0f0')
 			.attr('stroke-width', 0.1)
@@ -80,6 +89,12 @@ d3.csv("./aircraft_incidents.csv",
 			
 			
 		textNode.append('text')
+			.attr('transform', function(d,i) {
+				return 'translate('+[-d.length*9-7, yScale(i)-4.5]+')'
+			})
+			.on('click', function(d,i) {expandMake(d,i)});
+
+		textNode.enter().append('text')
 			.attr('class', 'makeText')
 			.text(function(d) {return d;})
 			.attr('text-anchor', 'end')
@@ -87,11 +102,11 @@ d3.csv("./aircraft_incidents.csv",
 				return 'translate('+[d.length*8.7, 15]+')'
 			});
 	});
-	
+
 var make_count = {};
 function makeBins(d) {
 	var y = yScale(makes.indexOf(d.make));
-	
+
 	if (y in make_count) {
 				make_count[y] ++;
 				x = xScale(make_count[y]);
@@ -99,7 +114,7 @@ function makeBins(d) {
 				make_count[y] = 0;
 				x = xScale(0);
 			}
-	
+
 	return [x,y]
 }
 
@@ -120,6 +135,9 @@ function expandMake(make,i) {
 		function(d) {return d.model}).keys();
 
 	var push = models.length * 60 + 50;
+	console.log(models);
+
+	var push = models.length * 30;
 
 	//reset counts for histogram
 	make_count = {};
@@ -135,7 +153,7 @@ function expandMake(make,i) {
     	.duration(500)
 		.attr('transform', function(d) {
 			var t = modelBins(d);
-			return 'translate('+[t[0], makes.indexOf(d.make) > i 
+			return 'translate('+[t[0], makes.indexOf(d.make) > i
 				? t[1] + push : t[1]]+')'
 		});
 
@@ -202,7 +220,7 @@ function modelBins(d) {
 	if (y == -1) {return makeBins(d);}
 
 	y = modelYScale(y);
-	
+
 	if (y in model_count) {
 		model_count[y] ++;
 		x = xScale(model_count[y]);
@@ -210,7 +228,7 @@ function modelBins(d) {
 		model_count[y] = 0;
 		x = xScale(0);
 	}
-	
+
 	return [x,y]
 }
 

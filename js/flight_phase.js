@@ -5,8 +5,7 @@ var svgHeight = +svg.attr('height');
 
 var padding = {t: 20, r: 40, b: 40, l: 200};
 
-var chartG = svg.append('g')
-    .attr('transform', 'translate('+[padding.l, padding.t]+')');
+var chartG = svg.append('g');
 
 var phases = ["STANDING", "TAXI", "TAKEOFF", "CLIMB", "CRUISE", "DESCENT",
                 "MANEUVERING", "APPROACH", "GO-AROUND", "LANDING"];
@@ -35,123 +34,6 @@ d3.csv('./aircraft_incidents.csv',
 
             incidents = dataset;
 
-            var phaseData = d3.nest()
-            .key(function(d) {
-                if (d.phase != "OTHER"
-                        && d.phase != "UNKNOWN"
-                        && d.phase != ""
-                        && d.phase != null) {
-                            return d.phase;
-                        }
-            })
-            .entries(incidents);
-
-            console.log("Phases Array:")
-            console.log(phaseData);
-
-            var fatalInjData = incidents.filter(function(d) {
-                if (d.fatal_injuries > 0) {
-                    return d;
-                }
-            });
-
-            console.log("Fatal Injuries Array:")
-            console.log(fatalInjData);
-
-            var serInjData = incidents.filter(function(d) {
-                if (d.serious_injuries > 0) {
-                    return d;
-                }
-            });
-
-            console.log("Serious Injuries Array:")
-            console.log(serInjData);
-
-            var uninjData = incidents.filter(function(d) {
-                if (d.uninjured > 0) {
-                    return d;
-                }
-            });
-
-            console.log("Uninjured Array:")
-            console.log(uninjData);
-
-            var fatalStanding = new Array();
-            var fatalTaxi = new Array();
-            var fatalTakeoff = new Array();
-            var fatalClimb = new Array();
-            var fatalCruise = new Array();
-            var fatalDescent = new Array();
-            var fatalManeuvering = new Array();
-            var fatalApproach = new Array();
-            var fatalGoAround = new Array();
-            var fatalLanding = new Array();
-
-            // phases.forEach(function(d) {
-            //     console.log(d);
-            //     fatalInjData.forEach(function(v) {
-            //         if (v.phase == d) {
-            //             var percent = v.fatal_injuries / (v.fatal_injuries + v.serious_injuries + v.uninjured);
-            //             percent *= 100;
-            //             if (v.phase == phases[0]) {
-            //                 if (fatalStanding.length == 0) {
-            //                     fatalStanding.push(phases[0]);
-            //                 }
-            //                 fatalStanding.push(percent);
-            //             } else if (v.phase == phases[1]) {
-            //                 if (fatalTaxi.length == 0) {
-            //                     fatalTaxi.push(phases[1]);
-            //                 }
-            //                 fatalTaxi.push(percent);
-            //             } else if (v.phase == phases[2]) {
-            //                 if (fatalTakeoff.length == 0) {
-            //                     fatalTakeoff.push(phases[2]);
-            //                 }
-            //                 fatalTakeoff.push(percent);
-            //             } else if (v.phase == phases[3]) {
-            //                 if (fatalClimb.length == 0) {
-            //                     fatalClimb.push(phases[3]);
-            //                 }
-            //                 fatalClimb.push(percent);
-            //             } else if (v.phase == phases[4]) {
-            //                 if (fatalCruise.length == 0) {
-            //                     fatalCruise.push(phases[4]);
-            //                 }
-            //                 fatalCruise.push(percent);
-            //             } else if (v.phase == phases[5]) {
-            //                 if (fatalDescent.length == 0) {
-            //                     fatalDescent.push(phases[5]);
-            //                 }
-            //                 fatalDescent.push(percent);
-            //             } else if (v.phase == phases[6]) {
-            //                 if (fatalManeuvering.length == 0) {
-            //                     fatalManeuvering.push(phases[6]);
-            //                 }
-            //                 fatalManeuvering.push(percent);
-            //             } else if (v.phase == phases[7]) {
-            //                 if (fatalApproach.length == 0) {
-            //                     fatalApproach.push(phases[7]);
-            //                 }
-            //                 fatalApproach.push(percent);
-            //             } else if (v.phase == phases[8]) {
-            //                 if (fatalGoAround.length == 0) {
-            //                     fatalGoAround.push(phases[8]);
-            //                 }
-            //                 fatalGoAround.push(percent);
-            //             } else if (v.phase == phases[9]) {
-            //                 if (fatalLanding.length == 0) {
-            //                     fatalLanding.push(phases[9]);
-            //                 }
-            //                 fatalLanding.push(percent);
-            //             }
-            //         }
-            //     });
-            // });
-            //
-            // var fatalPercent = [fatalStanding, fatalTaxi, fatalTakeoff, fatalClimb, fatalCruise,
-            //                     fatalDescent, fatalManeuvering, fatalApproach, fatalGoAround, fatalLanding];
-            // console.log(fatalPercent);
-
             var fatalPerPhase = d3.nest()
             .key(function(d) {
                 return d.phase;
@@ -174,11 +56,125 @@ d3.csv('./aircraft_incidents.csv',
             console.log("Fatalities Per Phase:");
             console.log(fatalPerPhase);
 
+            var avgPhaseFatalTotal = 0;
+
+            phases.forEach(function(d) {
+                fatalPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseFatalTotal += v.value.avgFatalInj;
+                    }
+                })
+            });
+
+            console.log(avgPhaseFatalTotal);
+
+            var avgPhaseFatalPercData = new Array();
+
+            phases.forEach(function(d) {
+                fatalPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseFatalPercData.push((v.value.avgFatalInj / avgPhaseFatalTotal) * 100);
+                    }
+                });
+            });
+
+            console.log(avgPhaseFatalPercData);
+
+            var serInjPerPhase = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .rollup(function(v) {
+                return {
+                    "avgFatalInj": d3.sum(v, function(d) {
+                        return d.fatal_injuries;
+                    }),
+                    "avgSerInj": d3.sum(v, function(d) {
+                        return d.serious_injuries;
+                    }),
+                    "avgUninj": d3.sum(v, function(d) {
+                        return d.uninjured;
+                    })
+                };
+            })
+            .entries(incidents);
+
+            console.log("Serious Injuries Per Phase:");
+            console.log(serInjPerPhase);
+
+            var avgPhaseSerInjTotal = 0;
+
+            phases.forEach(function(d) {
+                serInjPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseSerInjTotal += v.value.avgSerInj;
+                    }
+                })
+            });
+
+            console.log(avgPhaseSerInjTotal);
+
+            var avgPhaseSerInjPercData = new Array();
+
+            phases.forEach(function(d) {
+                serInjPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseSerInjPercData.push((v.value.avgSerInj / avgPhaseSerInjTotal) * 100);
+                    }
+                });
+            });
+
+            console.log(avgPhaseSerInjPercData);
+
+            var uninjPerPhase = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .rollup(function(v) {
+                return {
+                    "avgFatalInj": d3.sum(v, function(d) {
+                        return d.fatal_injuries;
+                    }),
+                    "avgSerInj": d3.sum(v, function(d) {
+                        return d.serious_injuries;
+                    }),
+                    "avgUninj": d3.sum(v, function(d) {
+                        return d.uninjured;
+                    })
+                };
+            })
+            .entries(incidents);
+
+            console.log("Uninjured Per Phase:");
+            console.log(uninjPerPhase);
+
+            var avgPhaseUninjTotal = 0;
+
+            phases.forEach(function(d) {
+                uninjPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseUninjTotal += v.value.avgUninj;
+                    }
+                })
+            });
+
+            console.log(avgPhaseUninjTotal);
+
+            var avgPhaseUninjPercData = new Array();
+
+            phases.forEach(function(d) {
+                uninjPerPhase.forEach(function(v) {
+                    if (v.key == d) {
+                        avgPhaseUninjPercData.push((v.value.avgUninj / avgPhaseUninjTotal) * 100);
+                    }
+                });
+            });
+
+            console.log(avgPhaseUninjPercData);
+
             var fatalInjPercData = new Array();
             var serInjPercData = new Array();
             var uninjPercData = new Array();
-
-            var fatalByPhasePercData = new Array();
 
             phases.forEach(function(d) {
                 fatalPerPhase.forEach(function(v) {
@@ -186,7 +182,6 @@ d3.csv('./aircraft_incidents.csv',
 
                     if (v.key == d) {
                         var avgTotal = v.value.avgFatalInj + v.value.avgSerInj + v.value.avgUninj;
-                        var avgFatalInjTotal;
 
                         var avgFatalInjPerc = (v.value.avgFatalInj / avgTotal) * 100;
                         var avgSerInjPerc = (v.value.avgSerInj / avgTotal) * 100;
@@ -197,8 +192,6 @@ d3.csv('./aircraft_incidents.csv',
                         fatalInjPercData.push(avgFatalInjPerc);
                         serInjPercData.push(avgSerInjPerc);
                         uninjPercData.push(avgUninjPerc);
-
-                        // var avgFatalByPhasePerc = v.value.avgFatalInj /
                     }
                 });
             });
@@ -207,51 +200,135 @@ d3.csv('./aircraft_incidents.csv',
             console.log(serInjPercData);
             console.log(uninjPercData);
 
-            var serInjPerPhase = d3.nest()
-            .key(function(d) {
-                return d.phase;
-            })
-            .rollup(function(v) {
-                return {
-                    "fatalInjCount": d3.sum(v, function(d) {
-                        return d.fatal_injuries;
-                    }),
-                    "seriousInjCount": d3.sum(v, function(d) {
-                        return d.serious_injuries;
-                    }),
-                    "uninjCount": d3.sum(v, function(d) {
-                        return d.uninjured;
-                    })
-                };
-            })
-            .entries(serInjData);
+            function gridData() {
+                var data = new Array();
+                var xpos = 1;
+                var ypos = 1;
+                var width = 80;
+                var height = 80;
+                var click = 0;
+                var value = 0;
 
-            console.log("Serious Injuries Per Phase:");
-            console.log(serInjPerPhase);
+                for (var row = 0; row < 2; row++) {
+                    data.push(new Array());
 
-            var uninjPerPhase = d3.nest()
-            .key(function(d) {
-                return d.phase;
-            })
-            .rollup(function(v) {
-                return {
-                    "fatalInjCount": d3.sum(v, function(d) {
-                        return d.fatal_injuries;
-                    }),
-                    "seriousInjCount": d3.sum(v, function(d) {
-                        return d.serious_injuries;
-                    }),
-                    "uninjCount": d3.sum(v, function(d) {
-                        return d.uninjured;
-                    })
-                };
-            })
-            .entries(uninjData);
+                    for (var column = 0; column < 10; column++) {
+                        if (row == 0) {
+                            data[row].push({
+                                type: "fatal",
+                                x: xpos,
+                                y: ypos,
+                                width: width,
+                                height: height,
+                                value: avgPhaseFatalPercData[column]
+                            })
+                            xpos += width;
+                        } else if (row == 1) {
+                            data[row].push({
+                                type: "serious",
+                                x: xpos,
+                                y: ypos,
+                                width: width,
+                                height: height,
+                                value: avgPhaseSerInjPercData[column]
+                            })
+                            xpos += width;
+                        }
+                    }
+                    xpos = 1;
+                    ypos += height;
+                }
+                console.log(data);
+                return data;
+            }
 
-            console.log("Uninjured Per Phase:");
-            console.log(uninjPerPhase);
+            var gridData = gridData();
 
-            console.log(uninjPerPhase[0]);
+            var margin = {top: 100, right: 20, bottom: 50, left: 100},
+                width = 900 - margin.left - margin.right,
+                height = 900 - margin.top - margin.bottom;
+
+            var fatalPercMax = d3.max(avgPhaseFatalPercData, function(d) { return d; });
+
+            var fatalX = d3.scaleLinear().range([0, 500])
+                        .domain([0, fatalPercMax]);
+
+            var serInjMax = d3.max(avgPhaseSerInjPercData, function(d) { return d; });
+
+            var serInjX = d3.scaleLinear().range([0, 500])
+                        .domain([0, serInjMax]);
+
+            var uninjMax = d3.max(avgPhaseSerInjPercData, function(d) { return d; });
+
+            var uninjX = d3.scaleLinear().range([0, 500])
+                        .domain([0, uninjMax]);
+
+            console.log(avgPhaseFatalPercData);
+            console.log(avgPhaseSerInjPercData);
+
+            // svg.attr("width", width )
+            //     .attr("height", height )
+            //     .append("g")
+            //     .attr("transform",
+            //           "translate(" + margin.left + "," + margin.top + ")");
+
+            var fatalColors = ["#ffe6e6", "#ffb3b3", "#ff8080", "#cc0000"];
+            var serInjColors = ["#ffd1b3", "#ffb380", "#ff944d", "#ff751a"];
+            var uninjColors = ["#e6ffe6", "#b3ffb3", "80ff80", "00cc00"];
+
+            var fatalColorScale = d3.scaleQuantile()
+                .domain([0, fatalPercMax])
+                .range(fatalColors);
+            var serInjColorScale = d3.scaleQuantile()
+                .domain([0, serInjMax])
+                .range(serInjColors);
+
+            var row = chartG.selectAll(".row")
+                .data(gridData)
+                .enter().append("g")
+                .attr("class", "row");
+
+            var tooltip = chartG.append("text").attr("class", "toolTip");
+
+            var column = row.selectAll(".square")
+                .data(function(d) { return d; })
+                .enter().append("rect")
+                .attr("class", function(d, i) {
+                    var colNum = i+1;
+                    if (i >= 10) {
+                        col -= 9;
+                    }
+                    return "square highlight col" + colNum;
+                })
+                .attr("x", function(d) { return d.x+50; })
+                .attr("y", function(d) { return d.y+50; })
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .attr("width", function(d) { return d.width; })
+                .attr("height", function(d) { return d.height; })
+                .style("fill", "#fff")
+                .transition().duration(1000)
+                .style("fill", function(d) {
+                    if (d.type == "fatal") {
+                        return fatalColorScale(d.value);
+                    } else if (d.type == "serious") {
+                        return serInjColorScale(d.value);
+                    }
+                })
+                .style("stroke", "#fff")
+                .on('mouseover', function(d, i) {
+                    var highlightClass = (d.key).replace(/\s/g, "");
+                    d3.selectAll('.highlight').classed('notSelected', true);
+                    d3.selectAll('.highlight.' + highlightClass)
+                        .classed('notSelected', false)
+                        .classed('selected', true);
+                })
+                .on('mouseout', function(d) {
+                    d3.selectAll('.highlight')
+                        .classed('notSelected', false)
+                        .classed('selected', false);
+
+                });
 
 
     });

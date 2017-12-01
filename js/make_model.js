@@ -42,12 +42,8 @@ d3.csv("./aircraft_incidents.csv",
 		yScale = d3.scaleLinear()
 			.domain([0, makes.length-1])
 			.range([0, svgHeight/5]);
-		
-		var squares = squaresG.selectAll('.square')
-			.domain([0, makes.length])
-			.range([0, svgHeight/2]);
 
-		var squares = chartG.selectAll('.square')
+		var squares = squaresG.selectAll('.square')
 			.data(data);
 		var squaresEnter = squares.enter()
 			.append('rect')
@@ -61,7 +57,7 @@ d3.csv("./aircraft_incidents.csv",
 				var t = makeBins(d);
 				return 'translate('+[t[0], t[1]]+')'
 			});
-			
+
 		var textNode = chartG.selectAll('g textNode')
 			.data(makes)
 
@@ -75,26 +71,15 @@ d3.csv("./aircraft_incidents.csv",
 
 
 		textNode.append('rect')
-
-		var textNode = chartG.selectAll('.textNode')
-			.data(makes);
-
-		textNode.enter().append('rect')
 			.attr('class', 'textBox')
 			.style('fill', '#c1f0f0')
 			.attr('stroke-width', 0.1)
 			.style('stroke', '#000000')
 			.attr('width', function(d) {return d.length*9})
 			.attr('height', '20')
-			
-			
-		textNode.append('text')
-			.attr('transform', function(d,i) {
-				return 'translate('+[-d.length*9-7, yScale(i)-4.5]+')'
-			})
-			.on('click', function(d,i) {expandMake(d,i)});
 
-		textNode.enter().append('text')
+
+		textNode.append('text')
 			.attr('class', 'makeText')
 			.text(function(d) {return d;})
 			.attr('text-anchor', 'end')
@@ -135,9 +120,6 @@ function expandMake(make,i) {
 		function(d) {return d.model}).keys();
 
 	var push = models.length * 60 + 50;
-	console.log(models);
-
-	var push = models.length * 30;
 
 	//reset counts for histogram
 	make_count = {};
@@ -189,7 +171,7 @@ function expandMake(make,i) {
 		.attr('transform', function(d,idx) {
 			return 'translate('+[-d.length*9 + 80, yScale(i)-4.5]+')'
 		})
-			
+
 	modelNode.append('rect')
 		.style('fill', '#ffffff')
 		.attr('stroke-width', 0.1)

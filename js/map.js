@@ -66,7 +66,8 @@ d3.csv('./aircraft_incidents.csv',
             L.marker(d.LatLng, {icon: myIcon}).addTo(myMap).bindPopup("<h5>"+d.location+"</h5><table><thead>"
              + "<tr><td align=\"right\"><b>Date | </b></td><td>"+d.date+"</td></tr></thead>"
              + "<tbody><tr><td align=\"right\"><b>Make & Model | </b></td><td>"+d.make+" "+d.model+"</td></tr></tbody>"
-             + "<tbody><tr><td align=\"right\"><b>Airline | </b></td><td>"+(d.airline == "" ? "Unknown" : d.airline)+"</td></tr></tbody>"
+             + "<tbody><tr><td align=\"right\"><b>Airline | </b></td><td>"+(d.airline == "" ? "Unknown" : d.airline.indexOf('(') != -1
+                ? d.airline.substring(0, d.airline.indexOf('(')) : d.airline)+"</td></tr></tbody>"
              
              + "<tbody><tr><td align=\"right\"><b>Total Fatalities | </b></td><td>"+d.fatal_injuries+"</td></tr></tbody>"
              + "<tbody><tr><td align=\"right\"><b>Total Injured | </b></td><td>"+d.serious_injuries+"</td></tr></tbody>"

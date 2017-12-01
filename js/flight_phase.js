@@ -1,125 +1,222 @@
-d3.csv('./numMatrix.csv', function(error, dataset) {
-  dataset.forEach(function(d) {
-    d.col1 = +d.col1;
-    d.col2 = +d.col2;
-    d.col3 = +d.col3;
-    d.col4 = +d.col4;
-    d.col5 = +d.col5;
-  })
-  console.log(dataset);
+d3.csv('./aircraft_incidents.csv',
+    function(d) {
+        return {
+    		accident_number: d['Accident_Number'],
+            date: d['Event_Date'],
+    		make: d['Make'],
+    		model: d['Model'],
+    		airline: d['Air_Carrier'],
+    		phase: d['Broad_Phase_of_Flight'],
+            severity: d['Injury_Severity'],
+            damage: d['Aircraft_Damage'],
+            fatal_injuries: +d['Total_Fatal_Injuries'],
+            serious_injuries: +d['Total_Serious_Injuries'],
+            uninjured: +d['Total_Uninjured']
+        };
+    }, function(error, dataset) {
+        if (error) {
+            console.error('Error while loading ./aircraft_incidents.csv dataset.');
+            console.error(error);
+            return;
+        }
+
+        incidents = dataset;
+
+        var phaseData = d3.nest()
+            .key(function(d) {
+                if (d.phase != "OTHER"
+                        && d.phase != "UNKNOWN"
+                        && d.phase != ""
+                        && d.phase != null) {
+                            return d.phase;
+                        }
+            })
+            .entries(incidents);
+
+        phaseData.sort(function(a, b) {
+            return b.phase - a.phase;
+        });
+
+        console.log(phaseData);
+
+        var fatalData = incidents.filter(function(d) {
+            if (d.severity != "Unavailable"
+                    && d.severity != "Non-Fatal"
+                    && d.severity != "Incident"
+                    && d.severity != ""
+                    && d.phase != null) {
+                return d;
+            }
+        });
+
+        console.log(fatalData);
+
+        var fatalByMake = d3.nest()
+            .key(function(d) {
+                return d.make;
+            })
+            .entries(fatalData);
+
+        console.log(fatalByMake);
+
+        var fatalByMakeCount = new Array();
 
 
-  function gridData() {
-    var data = new Array();
-    var xpos = 1;
-    var ypos = 1;
-    var width = 100;
-    var height = 100;
-    var click = 0;
-    var value = 0;
+
+        // just hardcode keys here in order of flight phase
+        var phaseDataKeys = [];
+
+        console.log(phaseDataKeys);
+
+        console.log(d3.entries(phaseData));
+        console.log(fatalData.length);
+
+        var fatalPerPhaseCount = 0;
+
+        var fatalPerPhase = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .entries(fatalData);
+
+        console.log(fatalPerPhase);
+        console.log(fatalPerPhaseCount);
+
+        var array = fatalPerPhase.slice(1);
+        console.log(array);
+
+        console.log
+
+        var data_count = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            // .key(function(d) { return d.priority; })
+            .rollup(function(leaves) {
+                return leaves.length;
+            })
+            .entries(fatalPerPhase[0]);
+
+        data_count.forEach(function(element) {
+            console.log(element);
+        });
+
+        var gridData = gridData();
+
+        var margin = {top: 100, right: 20, bottom: 50, left: 100},
+          width = 900 - margin.left - margin.right,
+          height = 900 - margin.top - margin.bottom;
+
+        var x = d3.scaleLinear().range([0, 500])
+                    .domain([0,20]);
 
 
-    for (var row = 0; row < 5; row++) {
-      data.push( new Array() );
-      var rowData = dataset[row];
-      console.log(rowData);
-
-    var element = d3.map(rowData);
-    var elementValues = element.values();
-      console.log(elementValues);
-
-      for (var column = 0; column < 5; column++) {
-
-        data[row].push({
-          x: xpos,
-          y: ypos,
-          width: width,
-          height: height,
-          value: elementValues[column]
-
-        })
-
-        xpos += width;
-      }
-
-      xpos = 1;
-
-      ypos += height;
-    }
-
-    console.log(data);
-    return data;
-  }
-
-  var gridData = gridData();
-
-  var margin = {top: 100, right: 20, bottom: 50, left: 100},
-    width = 900 - margin.left - margin.right,
-    height = 900 - margin.top - margin.bottom;
-
-  var x = d3.scaleLinear().range([0, 500])
-              .domain([0,20]);
+        var grid = d3.select("body").append("svg")
+          .attr("width", width )
+          .attr("height", height )
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
 
-  var grid = d3.select("body").append("svg")
-    .attr("width", width )
-    .attr("height", height )
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+        var colors = ["#ffe6e6","#ffcccc","#ffb3b3","#ff8080","#e63900"];
+      //    var colors = ["red","blue","green"];
+        var colorScale = d3.scaleQuantile()
+              .domain([0,6])
+              .range(colors);
+
+        var row = grid.selectAll(".row")
+          .data(gridData)
+          .enter().append("g")
+          .attr("class", "row");
+
+      var tooltip = grid.append("text").attr("class", "toolTip");
+
+        var column = row.selectAll(".square")
+          .data(function(d) { return d; })
+          .enter().append("rect")
+          .attr("class","square")
+          .attr("x", function(d) { return d.x+50; })
+          .attr("y", function(d) { return d.y+50; })
+          .attr("width", function(d) { return d.width; })
+          .attr("height", function(d) { return d.height; })
+          // .style("fill", "fff")
+          // .transition()
+          // .duration(1000)
+          .style("fill", function(d){ return colorScale(d.value);})
+          // .style("stroke", "#fff")
+          .on("mouseover", function(d){
+
+            tooltip.style("visibility","visible")
+                  .attr("x",d.x+70)
+                  .attr("y",d.y+70)
+                  .attr("font-size","20px")
+                  .text(d.value);})
+          .on("mouseout",function(d){tooltip.style("visibility","hidden");});
+
+          grid.append("g")
+            .attr("transform", "translate(0," + 50 + ")")
+            .call(d3.axisRight(x)
+          .ticks(6));
+
+          grid.append("text")
+              .attr("transform", "translate(" + (280) + " ,"+(600)+")")
+              .style("text-anchor", "middle")
+              .text("HEAT-MAP");
+
+          grid.append("g")
+            .attr("transform", "translate("+50+",0)")
+            .call(d3.axisBottom(x)
+          .ticks(6));
+
+          function gridData() {
+            var data = new Array();
+            var xpos = 1;
+            var ypos = 1;
+            var width = 100;
+            var height = 100;
+            var click = 0;
+            var value = 0;
 
 
-  var colors = ["#ffe6e6","#ffcccc","#ffb3b3","#ff8080","#e63900"];
-//    var colors = ["red","blue","green"];
-  var colorScale = d3.scaleQuantile()
-        .domain([0,6])
-        .range(colors);
+            for (var row = 0; row < 5; row++) {
+              data.push( new Array() );
+              var rowData = dataset[row];
+              // console.log(rowData);
 
-  var row = grid.selectAll(".row")
-    .data(gridData)
-    .enter().append("g")
-    .attr("class", "row");
+            var element = d3.map(rowData);
+            var elementValues = element.values();
+              // console.log(elementValues);
 
-var tooltip = grid.append("text").attr("class", "toolTip");
+              for (var column = 0; column < 5; column++) {
 
-  var column = row.selectAll(".square")
-    .data(function(d) { return d; })
-    .enter().append("rect")
-    .attr("class","square")
-    .attr("x", function(d) { return d.x+50; })
-    .attr("y", function(d) { return d.y+50; })
-    .attr("width", function(d) { return d.width; })
-    .attr("height", function(d) { return d.height; })
-    // .style("fill", "fff")
-    // .transition()
-    // .duration(1000)
-    .style("fill", function(d){ return colorScale(d.value);})
-    // .style("stroke", "#fff")
-    .on("mouseover", function(d){
+                data[row].push({
+                  x: xpos,
+                  y: ypos,
+                  width: width,
+                  height: height,
+                  value: elementValues[column]
 
-      tooltip.style("visibility","visible")
-            .attr("x",d.x+70)
-            .attr("y",d.y+70)
-            .attr("font-size","20px")
-            .text(d.value);})
-    .on("mouseout",function(d){tooltip.style("visibility","hidden");});
+                })
 
-    grid.append("g")
-      .attr("transform", "translate(0," + 50 + ")")
-      .call(d3.axisRight(x)
-    .ticks(6));
+                xpos += width;
+              }
 
-    grid.append("text")
-        .attr("transform", "translate(" + (280) + " ,"+(600)+")")
-        .style("text-anchor", "middle")
-        .text("HEAT-MAP");
+              xpos = 1;
 
-    grid.append("g")
-      .attr("transform", "translate("+50+",0)")
-      .call(d3.axisBottom(x)
-    .ticks(6));
+              ypos += height;
+            }
+
+            console.log(data);
+            return data;
+          }
 
 });
+
+
+
+
+// OLD STUFF
 
 // const margin = { top: 50, right: 0, bottom: 100, left: 100 },
 //     width = 960 - margin.left - margin.right,
@@ -194,33 +291,33 @@ var tooltip = grid.append("text").attr("class", "toolTip");
 //     cards.select("title").text((d) => d.value);
 //
 //     cards.exit().remove();
-
-    // const legend = svg.selectAll(".legend")
-    //     .data([0].concat(colorScale.quantiles()), (d) => d);
-    //
-    // const legend_g = legend.enter().append("g")
-    //     .attr("class", "legend")
-    //     .attr("tr");
-    //
-    // legend_g.append("rect")
-    //   .attr("x", (d, i) => legendElementWidth * i)
-    //   .attr("y", height)
-    //   .attr("width", legendElementWidth)
-    //   .attr("height", gridSize / 2)
-    //   .style("fill", (d, i) => colors[i]);
-    //
-    // legend_g.append("text")
-    //   .attr("class", "mono")
-    //   .text((d) => "≥ " + Math.round(d))
-    //   .attr("x", (d, i) => legendElementWidth * i)
-    //   .attr("y", height + gridSize);
-    //
-    // legend.exit().remove();
+//
+//     const legend = svg.selectAll(".legend")
+//         .data([0].concat(colorScale.quantiles()), (d) => d);
+//
+//     const legend_g = legend.enter().append("g")
+//         .attr("class", "legend")
+//         .attr("tr");
+//
+//     legend_g.append("rect")
+//       .attr("x", (d, i) => legendElementWidth * i)
+//       .attr("y", height)
+//       .attr("width", legendElementWidth)
+//       .attr("height", gridSize / 2)
+//       .style("fill", (d, i) => colors[i]);
+//
+//     legend_g.append("text")
+//       .attr("class", "mono")
+//       .text((d) => "≥ " + Math.round(d))
+//       .attr("x", (d, i) => legendElementWidth * i)
+//       .attr("y", height + gridSize);
+//
+//     legend.exit().remove();
 //   });
 // };
-
+//
 // heatmapChart(dataset);
-
+//
 // var svg = d3.select("#flight_phase svg");
 //
 // var svgWidth = +svg.attr('width');
@@ -243,7 +340,7 @@ var tooltip = grid.append("text").attr("class", "toolTip");
 //         if (error) {console.log(error);}
 //
 //     });
-
+//
 // var svg = d3.select('svg');
 //
 // var svgWidth = +svg.attr('width');

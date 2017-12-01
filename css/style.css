@@ -26,3 +26,7 @@ text.axis-workweek {
 text.axis-worktime {
   fill: #000;
 }
+
+p{
+    max-width: 700px;
+}

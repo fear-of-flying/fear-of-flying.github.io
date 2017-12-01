@@ -7,8 +7,17 @@ var padding = {t: 20, r: 40, b: 40, l: 200};
 
 var chartG = svg.append('g');
 
-var phases = ["STANDING", "TAXI", "TAKEOFF", "CLIMB", "CRUISE", "DESCENT",
-                "MANEUVERING", "APPROACH", "GO-AROUND", "LANDING"];
+var phases = ["STANDING", "TAKEOFF", "CLIMB", "CRUISE", "DESCENT",
+                 "APPROACH", "MANEUVERING", "GO-AROUND", "LANDING", "TAXI"];
+
+for (var i = 0; i < phases.length; i++) {
+  var x = 200 + i*320;
+
+  var img = chartG.append('image')
+    .attr('class', 'phase_img')
+    .attr('href', '/img/'+phases[i]+'.png')
+    .attr('transform', 'scale(0.25,0.25) translate('+[x, 350]+')');
+}
 
 d3.csv('./aircraft_incidents.csv',
     function(d) {
@@ -53,8 +62,8 @@ d3.csv('./aircraft_incidents.csv',
             })
             .entries(incidents);
 
-            console.log("Fatalities Per Phase:");
-            console.log(fatalPerPhase);
+            // console.log("Fatalities Per Phase:");
+            // console.log(fatalPerPhase);
 
             var avgPhaseFatalTotal = 0;
 
@@ -66,7 +75,7 @@ d3.csv('./aircraft_incidents.csv',
                 })
             });
 
-            console.log(avgPhaseFatalTotal);
+            //console.log(avgPhaseFatalTotal);
 
             var avgPhaseFatalPercData = new Array();
 
@@ -99,8 +108,8 @@ d3.csv('./aircraft_incidents.csv',
             })
             .entries(incidents);
 
-            console.log("Serious Injuries Per Phase:");
-            console.log(serInjPerPhase);
+            // console.log("Serious Injuries Per Phase:");
+            // console.log(serInjPerPhase);
 
             var avgPhaseSerInjTotal = 0;
 
@@ -112,7 +121,7 @@ d3.csv('./aircraft_incidents.csv',
                 })
             });
 
-            console.log(avgPhaseSerInjTotal);
+            //console.log(avgPhaseSerInjTotal);
 
             var avgPhaseSerInjPercData = new Array();
 
@@ -124,7 +133,7 @@ d3.csv('./aircraft_incidents.csv',
                 });
             });
 
-            console.log(avgPhaseSerInjPercData);
+            //console.log(avgPhaseSerInjPercData);
 
             var uninjPerPhase = d3.nest()
             .key(function(d) {
@@ -145,8 +154,8 @@ d3.csv('./aircraft_incidents.csv',
             })
             .entries(incidents);
 
-            console.log("Uninjured Per Phase:");
-            console.log(uninjPerPhase);
+            // console.log("Uninjured Per Phase:");
+            // console.log(uninjPerPhase);
 
             var avgPhaseUninjTotal = 0;
 
@@ -158,7 +167,7 @@ d3.csv('./aircraft_incidents.csv',
                 })
             });
 
-            console.log(avgPhaseUninjTotal);
+            //console.log(avgPhaseUninjTotal);
 
             var avgPhaseUninjPercData = new Array();
 
@@ -170,7 +179,7 @@ d3.csv('./aircraft_incidents.csv',
                 });
             });
 
-            console.log(avgPhaseUninjPercData);
+            //console.log(avgPhaseUninjPercData);
 
             var fatalInjPercData = new Array();
             var serInjPercData = new Array();
@@ -187,7 +196,7 @@ d3.csv('./aircraft_incidents.csv',
                         var avgSerInjPerc = (v.value.avgSerInj / avgTotal) * 100;
                         var avgUninjPerc = (v.value.avgUninj / avgTotal) * 100;
 
-                        console.log(v.value.avgFatalInj);
+                        //console.log(v.value.avgFatalInj);
 
                         fatalInjPercData.push(avgFatalInjPerc);
                         serInjPercData.push(avgSerInjPerc);
@@ -196,9 +205,9 @@ d3.csv('./aircraft_incidents.csv',
                 });
             });
 
-            console.log(fatalInjPercData);
-            console.log(serInjPercData);
-            console.log(uninjPercData);
+            // console.log(fatalInjPercData);
+            // console.log(serInjPercData);
+            // console.log(uninjPercData);
 
             function gridData() {
                 var data = new Array();
@@ -238,7 +247,7 @@ d3.csv('./aircraft_incidents.csv',
                     xpos = 1;
                     ypos += height;
                 }
-                console.log(data);
+                //console.log(data);
                 return data;
             }
 
@@ -263,8 +272,8 @@ d3.csv('./aircraft_incidents.csv',
             var uninjX = d3.scaleLinear().range([0, 500])
                         .domain([0, uninjMax]);
 
-            console.log(avgPhaseFatalPercData);
-            console.log(avgPhaseSerInjPercData);
+            // console.log(avgPhaseFatalPercData);
+            // console.log(avgPhaseSerInjPercData);
 
             // svg.attr("width", width )
             //     .attr("height", height )
@@ -293,21 +302,34 @@ d3.csv('./aircraft_incidents.csv',
             var column = row.selectAll(".square")
                 .data(function(d) { return d; })
                 .enter().append("rect")
-                .attr("class", function(d, i) {
-                    var colNum = i+1;
-                    if (i >= 10) {
-                        col -= 9;
-                    }
-                    return "square highlight col" + colNum;
-                })
+                .attr("class", 'square')
                 .attr("x", function(d) { return d.x+50; })
-                .attr("y", function(d) { return d.y+50; })
+                .attr("y", function(d) { return d.y+150; })
                 .attr("rx", 4)
                 .attr("ry", 4)
                 .attr("width", function(d) { return d.width; })
                 .attr("height", function(d) { return d.height; })
                 .style("fill", "#fff")
-                .transition().duration(1000)
+                .style("stroke", "#fff")
+
+                column.on('mouseover', function(d, i) {
+                    //console.log(d);
+                    select(d,i);
+                    // var highlightClass = (d.key).replace(/\s/g, "");
+                    // d3.selectAll('.highlight').classed('notSelected', true);
+                    // d3.selectAll('.highlight.' + highlightClass)
+                    //     .classed('notSelected', false)
+                    //     .classed('selected', true);
+                }).on('mouseout', function(d) {
+                    chartG.selectAll('.square.hidden').classed('hidden', false);
+                    chartG.selectAll('.percentText').remove();
+                    // d3.selectAll('.highlight')
+                    //     .classed('notSelected', false)
+                    //     .classed('selected', false);
+
+                })
+
+                column.transition().duration(1000)
                 .style("fill", function(d) {
                     if (d.type == "fatal") {
                         return fatalColorScale(d.value);
@@ -315,20 +337,35 @@ d3.csv('./aircraft_incidents.csv',
                         return serInjColorScale(d.value);
                     }
                 })
-                .style("stroke", "#fff")
-                .on('mouseover', function(d, i) {
-                    var highlightClass = (d.key).replace(/\s/g, "");
-                    d3.selectAll('.highlight').classed('notSelected', true);
-                    d3.selectAll('.highlight.' + highlightClass)
-                        .classed('notSelected', false)
-                        .classed('selected', true);
-                })
-                .on('mouseout', function(d) {
-                    d3.selectAll('.highlight')
-                        .classed('notSelected', false)
-                        .classed('selected', false);
-
-                });
-
-
     });
+
+function select(d) {
+  var o = null;
+  chartG.selectAll('.square')
+    .classed('hidden', function(other, j) {
+      if (d.x != other.x) {
+        return true;
+      } else if (d.x == other.x && d.y != other.y) {
+        o = other;
+        return false;
+      }
+      return false;
+    })
+
+  chartG.append('text')
+    .text(Number(d.value).toFixed(1) + '%')
+    .attr('class', 'percentText')
+    .attr('text-anchor', 'middle')
+    .attr('x', d.x + 90)
+    .attr('y', d.y + 200)
+    //.on('mouseover', select(d));
+
+  chartG.append('text')
+    .text(Number(o.value).toFixed(1) + '%')
+    .attr('class', 'percentText')
+    .attr('text-anchor', 'middle')
+    .attr('x', o.x + 90)
+    .attr('y', o.y + 200)
+    //.on('mouseover', select(o));
+}
+

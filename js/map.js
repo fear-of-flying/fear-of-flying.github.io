@@ -59,7 +59,7 @@ d3.csv('./aircraft_incidents.csv',
 
             var myIcon = L.icon({
                 iconUrl: (d.severity.substring(0,5) == 'Fatal' ? '/img/red.png'
-                    : d.severity == '/img/yellow.png' ? "#ffc61a" : "/img/orange.png"),
+                    : d.severity == 'Incident' ? '/img/yellow.png' : "/img/orange.png"),
                 iconSize: [size, size]
             });
 

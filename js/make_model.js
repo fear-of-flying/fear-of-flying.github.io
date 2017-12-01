@@ -24,16 +24,29 @@ d3.csv("./aircraft_incidents.csv",
 			model: d['Model'],
 			airline: d['Air_Carrier'],
 			weather: d['Weather_Condition'],
-			phase: d['Broad_Phase_of_Flight']
+			phase: d['Broad_Phase_of_Flight'],
+            fatal_injuries: +d['Total_Fatal_Injuries'],
+            serious_injuries: +d['Total_Serious_Injuries']
 		};
 	},
 
 	function(error, dataset) {
 		if (error) {console.log(error);}
 
-		data = dataset;
+		data = dataset.sort(function(a,b){
+			if (a.severity.substring(0,5) == 'Fatal')
+				return 1;
+			else if (a.severity == 'Incident')
+				return -1;
+			else if (b.severity.substring(0,5) == 'Fatal')
+				return -1;
+			else if (b.severity == 'Incident')
+				return 1;
+			else
+				return 0;
+		});
 		
-		makes = d3.map(dataset, function(d) {return d.make;}).keys();
+		makes = d3.map(data, function(d) {return d.make;}).keys();
 		chartWidth = svgWidth/2;
 		xScale = d3.scaleLinear()
 			.domain([0, 1215])
@@ -50,7 +63,8 @@ d3.csv("./aircraft_incidents.csv",
 			.attr('class', 'square')
 			.attr('width', 2)
 			.attr('height', 10)
-			.style('fill', '#ffffff')
+			.style('fill', function(d) {return d.severity.substring(0,5) == 'Fatal' ? '#800000'
+                : d.severity == 'Incident' ? "#ffc61a" : "#e67300"})
 			.attr('stroke-width', 0.1)
 			.style('stroke', '#000000')
 			.attr('transform', function(d) {
@@ -72,7 +86,7 @@ d3.csv("./aircraft_incidents.csv",
 
 		textNode.append('rect')
 			.attr('class', 'textBox')
-			.style('fill', '#c1f0f0')
+			.style('fill', '#DDE4EA')
 			.attr('stroke-width', 0.1)
 			.style('stroke', '#000000')
 			.attr('width', function(d) {return d.length*9})

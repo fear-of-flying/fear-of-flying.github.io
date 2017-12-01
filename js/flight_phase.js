@@ -21,7 +21,7 @@
 //
 //     });
 
-var svg = d3.select('svg');
+var svg = d3.select('#flight_phase svg');
 
 var svgWidth = +svg.attr('width');
 var svgHeight = +svg.attr('height');

@@ -16,7 +16,9 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 
 
 var svgLayer = L.svg();
-svgLayer.addTo(myMap)
+svgLayer.addTo(myMap);
+
+
 
 var svg = d3.select('#map').select('svg');
 var nodeLinkG = svg.select('g')
@@ -56,6 +58,19 @@ d3.csv('./aircraft_incidents.csv',
             return;
         }
         data = dataset;
+
+        // for (var i =0; i < data.length; i++) {
+        //     d = data[i];
+        //     var circle = L.circle(d.LatLng, {
+        //         // fillColor: '#ffffff',
+        //         // color: (d.severity.substring(0,5) == 'Fatal' ? '#800000'
+        //         // : d.severity == 'Incident' ? "#ffc61a" : "#e67300"),
+        //         // fillOpacity: 0.4,
+        //         radius: 4 + ((d.fatal_injuries / 349) * 12) + ((d.serious_injuries / 349) * 12)
+        //     }).addTo(myMap);
+
+        //     console.log(circle.getRadius());
+        // }
 
         nodeLinkG.selectAll('.grid-node')
             .data(data)

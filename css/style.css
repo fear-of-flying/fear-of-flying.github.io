@@ -6,3 +6,7 @@
 .hidden {
   opacity: 0.2;
 }
+
+img.leaflet-tile{
+    pointer-events: none;
+}

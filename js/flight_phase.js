@@ -1,3 +1,45 @@
+
+// var svg = d3.select("#flight_phase svg");
+//
+// var svgWidth = +svg.attr('width');
+// var svgHeight = +svg.attr('height');
+//
+//
+// d3.csv("./aircraft_incidents.csv",
+//     function(d,i){
+//         return {
+//             severity: d['Injury_Severity'],
+//             make: d['Make'],
+//             model: d['Model'],
+//             airline: d['Air_Carrier'],
+//             weather: d['Weather_Condition'],
+//             phase: d['Broad_Phase_of_Flight']
+//         };
+//     },
+//
+//     function(error, dataset) {
+//         if (error) {console.log(error);}
+//
+//     });
+
+var svg = d3.select('#flight_phase svg');
+
+var svgWidth = +svg.attr('width');
+var svgHeight = +svg.attr('height');
+
+var padding = {t: 20, r: 40, b: 40, l: 200};
+
+var barChartWidth = 300;
+var barChartHeight = 250;
+
+var barX = d3.scaleLinear().range([120, 290]);
+
+var barXAxis = d3.axisBottom(barX)
+    .ticks(6);
+
+var chartG = svg.append('g')
+    .attr('transform', 'translate('+[padding.l, padding.t]+')');
+
 d3.csv('./aircraft_incidents.csv',
     function(d) {
         return {
@@ -85,6 +127,26 @@ d3.csv('./aircraft_incidents.csv',
         var array = fatalPerPhase.slice(1);
         console.log(array);
 
+
+        console.log(phaseDataKeys);
+
+        console.log(d3.entries(phaseData));
+        console.log(fatalData.length);
+
+        var fatalPerPhaseCount = 0;
+
+        var fatalPerPhase = d3.nest()
+            .key(function(d) {
+                return d.phase;
+            })
+            .entries(fatalData);
+
+        console.log(fatalPerPhase);
+        console.log(fatalPerPhaseCount);
+
+        var array = fatalPerPhase.slice(1);
+        console.log(array);
+
         console.log
 
         var data_count = d3.nest()
@@ -109,6 +171,100 @@ d3.csv('./aircraft_incidents.csv',
 
         var x = d3.scaleLinear().range([0, 500])
                     .domain([0,20]);
+
+
+        var grid = d3.select("body").append("svg")
+          .attr("width", width )
+          .attr("height", height )
+        .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+
+        var colors = ["#ffe6e6","#ffcccc","#ffb3b3","#ff8080","#e63900"];
+      //    var colors = ["red","blue","green"];
+        var colorScale = d3.scaleQuantile()
+              .domain([0,6])
+              .range(colors);
+
+        var row = grid.selectAll(".row")
+          .data(gridData)
+          .enter().append("g")
+          .attr("class", "row");
+
+      var tooltip = grid.append("text").attr("class", "toolTip");
+
+        var column = row.selectAll(".square")
+          .data(function(d) { return d; })
+          .enter().append("rect")
+          .attr("class","square")
+          .attr("x", function(d) { return d.x+50; })
+          .attr("y", function(d) { return d.y+50; })
+          .attr("width", function(d) { return d.width; })
+          .attr("height", function(d) { return d.height; })
+          // .style("fill", "fff")
+          // .transition()
+          // .duration(1000)
+          .style("fill", function(d){ return colorScale(d.value);})
+          // .style("stroke", "#fff")
+          .on("mouseover", function(d){
+
+            tooltip.style("visibility","visible")
+                  .attr("x",d.x+70)
+                  .attr("y",d.y+70)
+                  .attr("font-size","20px")
+                  .text(d.value);})
+          .on("mouseout",function(d){tooltip.style("visibility","hidden");});
+
+          grid.append("g")
+            .attr("transform", "translate(0," + 50 + ")")
+            .call(d3.axisRight(x)
+          .ticks(6));
+
+          grid.append("text")
+              .attr("transform", "translate(" + (280) + " ,"+(600)+")")
+              .style("text-anchor", "middle")
+              .text("HEAT-MAP");
+
+          grid.append("g")
+            .attr("transform", "translate("+50+",0)")
+            .call(d3.axisBottom(x)
+          .ticks(6));
+
+          function gridData() {
+            var data = new Array();
+            var xpos = 1;
+            var ypos = 1;
+            var width = 100;
+            var height = 100;
+            var click = 0;
+            var value = 0;
+
+
+            for (var row = 0; row < 5; row++) {
+              data.push( new Array() );
+              var rowData = dataset[row];
+              // console.log(rowData);
+
+            var element = d3.map(rowData);
+            var elementValues = element.values();
+              // console.log(elementValues);
+
+              for (var column = 0; column < 5; column++) {
+
+                data[row].push({
+                  x: xpos,
+                  y: ypos,
+                  width: width,
+                  height: height,
+                  value: elementValues[column]
+
+                })
+
+                xpos += width;
+              }
+
+              xpos = 1;
 
 
         var grid = d3.select("body").append("svg")

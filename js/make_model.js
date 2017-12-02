@@ -13,9 +13,19 @@ var makeChartG = svg.append('g')
 var squaresG = makeChartG.append('g')
 	.attr('transform', 'translate('+[padding.l, 0]+')');
 
+var foreignObject = svg.append('foreignObject')
+	.attr('class', 'jumbotron')
+	.style('width', '500px')
+	.attr('x', 450)
+	.attr('y', 50)
+	.html('<h5 id=\"make_model_h3\" align="center"></h5>'
+		+'<div align=\"center\"><p id=\"make_model_p\" ></p></div>');
+
 var active = -1;
 
 updateDescription();
+
+
 
 d3.csv("./aircraft_incidents.csv",
 	function(d,i){
@@ -130,38 +140,41 @@ function makeBins(d) {
 }
 
 function updateDescription() {
-	var p = document.getElementById("make_model_p");
-	var h3 = document.getElementById("make_model_h3");
+	var p;
+	var h3;
 	if (active == -1) {
-		h3.innerHTML = "";
-		p.innerHTML = "";
+		h3 = "";
+		p = "";
 	} else if (active == 0) {
-		h3.innerHTML = "Airbus";
-		p.innerHTML = "Airbus is a multi-national company with European roots."
+		h3 = "Airbus";
+		p = "Airbus is a multi-national company with European roots."
 			+" The company's most commonly flown commercial plane is the A320 designed for short"
 			+" and medium ranges."
 			+" The A320 was also the model which Chesley Sullenberger landed in the Hudson River in 2009.";
 	} else if (active == 1) {
-		h3.innerHTML = "Boeing";
-		p.innerHTML = "Boeing is probably the most familiar to many Americans as one of the largest employers and exporters in the US."
+		h3 = "Boeing";
+		p = "Boeing is probably the most familiar to many Americans as one of the largest employers and exporters in the US."
 			+" The 737 is the most produced large jet-powered civilian aircraft."
 			+" It has more accidents than any other company's models combined.";
 	} else if (active == 2) {
-		h3.innerHTML = "Bombardier";
-		p.innerHTML = "Bombardier is the world's third largest civil aircraft manufaturer."
+		h3 = "Bombardier";
+		p = "Bombardier is the world's third largest civil aircraft manufaturer."
 			+" It is based out of Quebec, Canada. The most common models belong to the CRJ line."
 			+" The CL-600 is a family of business jets built to hold up to 12 passengers.";
 	} else if (active == 3) {
-		h3.innerHTML = "McDonnell Douglas";
-		p.innerHTML = "McDonnell Douglas was formed by the merger of McDonnell Aircraft and Douglas Aircraft in 1967."
+		h3 = "McDonnell Douglas";
+		p = "McDonnell Douglas was formed by the merger of McDonnell Aircraft and Douglas Aircraft in 1967."
 			+" Before the company merged with Boeing in 1997, it produced a number of well-known commercial aircrafts such as the DC-10 airliner."
 			+" The MD-80 is a stretched version of the DC-9 and can seat from 130 to 172 passengers.";
 	} else if (active == 4) {
-		h3.innerHTML = "Embraer";
-		p.innerHTML = "Embraer is a Brazilian conglomerate head-quartered in Sao Paulo."
+		h3 = "Embraer";
+		p = "Embraer is a Brazilian conglomerate head-quartered in Sao Paulo."
 			+" The ERJ family airliners were designed for the regional jet aircraft market."
 			+" The E-Jet was designed in 2004 and serves as a medium-range jet airliner carrying 66 to 124 passengers.";
 	}
+
+	foreignObject.html('<h5 id="make_model_h3" align="center">'+h3+'</h5>'
+		+'<div align="center"><p id="make_model_p" >'+p+'</p></div>');
 
 }
 

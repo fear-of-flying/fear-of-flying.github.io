@@ -16,7 +16,7 @@ var squaresG = makeChartG.append('g')
 var foreignObject = svg.append('foreignObject')
 	.attr('class', 'jumbotron')
 	.style('width', '500px')
-	.attr('x', 500)
+	.attr('x', 450)
 	.attr('y', 50)
 	.html('<h5 id=\"make_model_h3\" align="center"></h5>'
 		+'<div align=\"center\"><p id=\"make_model_p\" ></p></div>');

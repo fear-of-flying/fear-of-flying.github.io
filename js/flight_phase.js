@@ -476,17 +476,16 @@ function selectLegend(i, key) {
   if (key == 'fatal') {
     var low = (+fatalPercMax.toFixed(2)/4) * (i);
     var hi = (+fatalPercMax.toFixed(2)/4) * (i+1);
-    var y = 0;
+    var y = 1;
   } else {
     var low = (serInjMax.toFixed(2)/4) * (i);
     var hi = (+serInjMax.toFixed(2)/4) * (i+1);
-    var y = 1;
+    var y = 81;
   }
 
   chartG.selectAll('.square')
     .classed('hidden', function(other, j) {
-      
-      return other.y != y && (other.value >= hi || other.value <= low);
+      return (other.y != y || (other.value >= hi || other.value <= low));
     });
 }
 

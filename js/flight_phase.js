@@ -17,7 +17,7 @@ for (var i = 0; i < phases.length; i++) {
 
   var img = chartG.append('image')
     .attr('class', 'phase_img')
-    .attr('href', '/img/'+phases[i]+'.png')
+    .attr('href', './img/'+phases[i]+'.png')
     .attr('transform', 'scale(0.25,0.25) translate('+[x+420, 350]+')');
 }
 

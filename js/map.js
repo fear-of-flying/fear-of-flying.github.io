@@ -58,8 +58,8 @@ d3.csv('./aircraft_incidents.csv',
             var size = 10 + 2* (((d.fatal_injuries / 349) * 12) + ((d.serious_injuries / 349) * 12));
 
             var myIcon = L.icon({
-                iconUrl: (d.severity.substring(0,5) == 'Fatal' ? '/img/red.png'
-                    : d.severity == 'Incident' ? '/img/yellow.png' : "/img/orange.png"),
+                iconUrl: (d.severity.substring(0,5) == 'Fatal' ? './img/red.png'
+                    : d.severity == 'Incident' ? './img/yellow.png' : "./img/orange.png"),
                 iconSize: [size, size]
             });
 
@@ -68,7 +68,7 @@ d3.csv('./aircraft_incidents.csv',
              + "<tbody><tr><td align=\"right\"><b>Make & Model | </b></td><td>"+d.make+" "+d.model+"</td></tr></tbody>"
              + "<tbody><tr><td align=\"right\"><b>Airline | </b></td><td>"+(d.airline == "" ? "Unknown" : d.airline.indexOf('(') != -1
                 ? d.airline.substring(0, d.airline.indexOf('(')) : d.airline)+"</td></tr></tbody>"
-             
+
              + "<tbody><tr><td align=\"right\"><b>Total Fatalities | </b></td><td>"+d.fatal_injuries+"</td></tr></tbody>"
              + "<tbody><tr><td align=\"right\"><b>Total Injured | </b></td><td>"+d.serious_injuries+"</td></tr></tbody>"
              + "<tbody><tr><td align=\"right\"><b>Aircraft Damage | </b></td><td>"+(d.damage == "" ? "Unknown" : d.damage)+"</td></tr></tbody></table>");

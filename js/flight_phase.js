@@ -16,7 +16,7 @@ for (var i = 0; i < phases.length; i++) {
   var img = chartG.append('image')
     .attr('class', 'phase_img')
     .attr('href', '/img/'+phases[i]+'.png')
-    .attr('transform', 'scale(0.25,0.25) translate('+[x, 350]+')');
+    .attr('transform', 'scale(0.25,0.25) translate('+[x+420, 350]+')');
 }
 
 d3.csv('./aircraft_incidents.csv',
@@ -267,23 +267,8 @@ d3.csv('./aircraft_incidents.csv',
             var serInjX = d3.scaleLinear().range([0, 500])
                         .domain([0, serInjMax]);
 
-            var uninjMax = d3.max(avgPhaseSerInjPercData, function(d) { return d; });
-
-            var uninjX = d3.scaleLinear().range([0, 500])
-                        .domain([0, uninjMax]);
-
-            // console.log(avgPhaseFatalPercData);
-            // console.log(avgPhaseSerInjPercData);
-
-            // svg.attr("width", width )
-            //     .attr("height", height )
-            //     .append("g")
-            //     .attr("transform",
-            //           "translate(" + margin.left + "," + margin.top + ")");
-
             var fatalColors = ["#ffe6e6", "#ffb3b3", "#ff8080", "#cc0000"];
             var serInjColors = ["#ffd1b3", "#ffb380", "#ff944d", "#ff751a"];
-            var uninjColors = ["#e6ffe6", "#b3ffb3", "80ff80", "00cc00"];
 
             var fatalColorScale = d3.scaleQuantile()
                 .domain([0, fatalPercMax])
@@ -295,7 +280,8 @@ d3.csv('./aircraft_incidents.csv',
             var row = chartG.selectAll(".row")
                 .data(gridData)
                 .enter().append("g")
-                .attr("class", "row");
+                .attr("class", "row")
+                .attr("transform", "translate("+[100, 0]+")");
 
             var tooltip = chartG.append("text").attr("class", "toolTip");
 
@@ -313,19 +299,10 @@ d3.csv('./aircraft_incidents.csv',
                 .style("stroke", "#fff")
 
                 column.on('mouseover', function(d, i) {
-                    //console.log(d);
                     select(d,i);
-                    // var highlightClass = (d.key).replace(/\s/g, "");
-                    // d3.selectAll('.highlight').classed('notSelected', true);
-                    // d3.selectAll('.highlight.' + highlightClass)
-                    //     .classed('notSelected', false)
-                    //     .classed('selected', true);
                 }).on('mouseout', function(d) {
                     chartG.selectAll('.square.hidden').classed('hidden', false);
                     chartG.selectAll('.percentText').remove();
-                    // d3.selectAll('.highlight')
-                    //     .classed('notSelected', false)
-                    //     .classed('selected', false);
 
                 })
 
@@ -336,7 +313,79 @@ d3.csv('./aircraft_incidents.csv',
                     } else if (d.type == "serious") {
                         return serInjColorScale(d.value);
                     }
-                })
+                });
+
+                svg.append('text')
+                      .text("% of Fatal Injuries")
+                      .style('font-size', '12')
+                      .style('font-weight', 500)
+                      .attr('transform', 'translate('+[25, 200]+')');
+
+                svg.append('text')
+                      .text("% of Serious Injuries")
+                      .style('font-size', '12')
+                      .style('font-weight', 500)
+                      .attr('transform', 'translate('+[12, 275]+')');
+
+                svg.append('text')
+                    .text(phases[0])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[162, 145]+')');
+
+                svg.append('text')
+                    .text(phases[1])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[247, 145]+')');
+
+                svg.append('text')
+                    .text(phases[2])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[335, 145]+')');
+
+                svg.append('text')
+                    .text(phases[3])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[411, 145]+')');
+
+                svg.append('text')
+                    .text(phases[4])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[486, 145]+')');
+
+                svg.append('text')
+                    .text(phases[5])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[562, 145]+')');
+
+                svg.append('text')
+                    .text(phases[6])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[633, 145]+')');
+
+                svg.append('text')
+                    .text(phases[7])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[718, 145]+')');
+
+                svg.append('text')
+                    .text(phases[8])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[807, 145]+')');
+
+                svg.append('text')
+                    .text(phases[9])
+                    .style('font-size', '10')
+                    .style('font-weight', 500)
+                    .attr('transform', 'translate('+[899, 145]+')');
     });
 
 function select(d) {
@@ -356,7 +405,7 @@ function select(d) {
     .text(Number(d.value).toFixed(1) + '%')
     .attr('class', 'percentText')
     .attr('text-anchor', 'middle')
-    .attr('x', d.x + 90)
+    .attr('x', d.x + 190)
     .attr('y', d.y + 200)
     //.on('mouseover', select(d));
 
@@ -364,8 +413,7 @@ function select(d) {
     .text(Number(o.value).toFixed(1) + '%')
     .attr('class', 'percentText')
     .attr('text-anchor', 'middle')
-    .attr('x', o.x + 90)
+    .attr('x', o.x + 190)
     .attr('y', o.y + 200)
     //.on('mouseover', select(o));
 }
-

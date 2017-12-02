@@ -36,13 +36,13 @@ d3.csv("./aircraft_incidents.csv",
 
 		data = dataset.sort(function(a,b){
 			if (a.severity.substring(0,5) == 'Fatal')
-				return -1;
+				return 1;
 			else if (a.severity == 'Incident')
-				return 1;
-			else if (b.severity.substring(0,5) == 'Fatal')
-				return 1;
-			else if (b.severity == 'Incident')
 				return -1;
+			else if (b.severity.substring(0,5) == 'Fatal')
+				return -1;
+			else if (b.severity == 'Incident')
+				return 1;
 			else
 				return 0;
 		});

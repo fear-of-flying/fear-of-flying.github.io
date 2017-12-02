@@ -229,7 +229,7 @@ d3.csv('./aircraft_incidents.csv',
                                 y: ypos,
                                 width: width,
                                 height: height,
-                                value: avgPhaseFatalPercData[column]
+                                value: fatalInjPercData[column]
                             })
                             xpos += width;
                         } else if (row == 1) {
@@ -239,7 +239,7 @@ d3.csv('./aircraft_incidents.csv',
                                 y: ypos,
                                 width: width,
                                 height: height,
-                                value: avgPhaseSerInjPercData[column]
+                                value: serInjPercData[column]
                             })
                             xpos += width;
                         }
@@ -257,12 +257,12 @@ d3.csv('./aircraft_incidents.csv',
                 width = 900 - margin.left - margin.right,
                 height = 900 - margin.top - margin.bottom;
 
-            var fatalPercMax = d3.max(avgPhaseFatalPercData, function(d) { return d; });
+            var fatalPercMax = d3.max(fatalInjPercData, function(d) { return d; });
 
             var fatalX = d3.scaleLinear().range([0, 500])
                         .domain([0, fatalPercMax]);
 
-            var serInjMax = d3.max(avgPhaseSerInjPercData, function(d) { return d; });
+            var serInjMax = d3.max(serInjPercData, function(d) { return d; });
 
             var serInjX = d3.scaleLinear().range([0, 500])
                         .domain([0, serInjMax]);

@@ -10,6 +10,8 @@ var chartG = svg.append('g');
 var phases = ["STANDING", "TAKEOFF", "CLIMB", "CRUISE", "DESCENT",
                  "APPROACH", "MANEUVERING", "GO-AROUND", "LANDING", "TAXI"];
 
+var format = d3.format(".3s");
+
 for (var i = 0; i < phases.length; i++) {
   var x = 200 + i*320;
 
@@ -205,9 +207,9 @@ d3.csv('./aircraft_incidents.csv',
                 });
             });
 
-            // console.log(fatalInjPercData);
-            // console.log(serInjPercData);
-            // console.log(uninjPercData);
+            console.log(fatalInjPercData);
+            console.log(serInjPercData);
+            console.log(uninjPercData);
 
             function gridData() {
                 var data = new Array();
@@ -386,6 +388,110 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-size', '10')
                     .style('font-weight', 500)
                     .attr('transform', 'translate('+[899, 145]+')');
+
+                svg.append("rect")
+                    .attr('x', 350)
+                    .attr('y', 360)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', fatalColors[0]);
+
+                svg.append('text')
+                    .text("≤ " + format(fatalPercMax/4) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[350, 390]+')');
+
+                svg.append("rect")
+                    .attr('x', 450)
+                    .attr('y', 360)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', fatalColors[1]);
+
+                svg.append('text')
+                    .text("≤ " + format((fatalPercMax/4)*2) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[451, 390]+')');
+
+                svg.append("rect")
+                    .attr('x', 550)
+                    .attr('y', 360)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', fatalColors[2]);
+
+                svg.append('text')
+                    .text("≤ " + format((fatalPercMax/4)*3) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[552, 390]+')');
+
+                svg.append("rect")
+                    .attr('x', 650)
+                    .attr('y', 360)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', fatalColors[3]);
+
+                svg.append('text')
+                    .text("≤ " + format(fatalPercMax) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[653, 390]+')');
+
+                svg.append("rect")
+                    .attr('x', 350)
+                    .attr('y', 430)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', serInjColors[0]);
+
+                svg.append('text')
+                    .text("≤ " + (serInjMax/4).toFixed(2) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[350, 460]+')');
+
+                svg.append("rect")
+                    .attr('x', 450)
+                    .attr('y', 430)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', serInjColors[1]);
+
+                svg.append('text')
+                    .text("≤ " + ((serInjMax/4)*2).toFixed(2) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[451, 460]+')');
+
+                svg.append("rect")
+                    .attr('x', 550)
+                    .attr('y', 430)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', serInjColors[2]);
+
+                svg.append('text')
+                    .text("≤ " + ((serInjMax/4)*3).toFixed(2) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[552, 460]+')');
+
+                svg.append("rect")
+                    .attr('x', 650)
+                    .attr('y', 430)
+                    .attr('width', 100)
+                    .attr('height', 14)
+                    .attr('fill', serInjColors[3]);
+
+                svg.append('text')
+                    .text("≤ " + (serInjMax).toFixed(2) + "%")
+                    .style('font-size', '12')
+                    .style('font-weight', 400)
+                        .attr('transform', 'translate('+[653, 460]+')');
     });
 
 function select(d) {
@@ -402,7 +508,7 @@ function select(d) {
     })
 
   chartG.append('text')
-    .text(Number(d.value).toFixed(1) + '%')
+    .text(Number(d.value).toFixed(2) + '%')
     .attr('class', 'percentText')
     .attr('text-anchor', 'middle')
     .attr('x', d.x + 190)
@@ -410,7 +516,7 @@ function select(d) {
     //.on('mouseover', select(d));
 
   chartG.append('text')
-    .text(Number(o.value).toFixed(1) + '%')
+    .text(Number(o.value).toFixed(2) + '%')
     .attr('class', 'percentText')
     .attr('text-anchor', 'middle')
     .attr('x', o.x + 190)

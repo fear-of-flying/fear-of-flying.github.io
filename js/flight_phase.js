@@ -259,12 +259,12 @@ d3.csv('./aircraft_incidents.csv',
                 width = 900 - margin.left - margin.right,
                 height = 900 - margin.top - margin.bottom;
 
-            var fatalPercMax = d3.max(fatalInjPercData, function(d) { return d; });
+            fatalPercMax = d3.max(fatalInjPercData, function(d) { return d; });
 
             var fatalX = d3.scaleLinear().range([0, 500])
                         .domain([0, fatalPercMax]);
 
-            var serInjMax = d3.max(serInjPercData, function(d) { return d; });
+            serInjMax = d3.max(serInjPercData, function(d) { return d; });
 
             var serInjX = d3.scaleLinear().range([0, 500])
                         .domain([0, serInjMax]);
@@ -389,12 +389,22 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-weight', 500)
                     .attr('transform', 'translate('+[899, 145]+')');
 
-                svg.append("rect")
-                    .attr('x', 350)
-                    .attr('y', 360)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', fatalColors[0]);
+                svg.selectAll('.legendRect1')
+                  .data(fatalColors).enter()
+                  .append('rect')
+                  .attr('class', 'legendRect1')
+                  .attr('x', function(d,i) {return 350 + (100*i)})
+                  .attr('y', 360)
+                  .attr('width', 100)
+                  .attr('height', 14)
+                  .attr('fill', function(d,i) {return fatalColors[i]})
+                  .on('mouseover', function(d, i) {
+                      selectLegend(i,'fatal');
+                  }).on('mouseout', function(d) {
+                      chartG.selectAll('.square.hidden').classed('hidden', false);
+                      chartG.selectAll('.percentText').remove();
+
+                  });
 
                 svg.append('text')
                     .text("≤ " + format(fatalPercMax/4) + "%")
@@ -402,25 +412,11 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[350, 390]+')');
 
-                svg.append("rect")
-                    .attr('x', 450)
-                    .attr('y', 360)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', fatalColors[1]);
-
                 svg.append('text')
                     .text("≤ " + format((fatalPercMax/4)*2) + "%")
                     .style('font-size', '12')
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[451, 390]+')');
-
-                svg.append("rect")
-                    .attr('x', 550)
-                    .attr('y', 360)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', fatalColors[2]);
 
                 svg.append('text')
                     .text("≤ " + format((fatalPercMax/4)*3) + "%")
@@ -428,25 +424,28 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[552, 390]+')');
 
-                svg.append("rect")
-                    .attr('x', 650)
-                    .attr('y', 360)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', fatalColors[3]);
-
                 svg.append('text')
                     .text("≤ " + format(fatalPercMax) + "%")
                     .style('font-size', '12')
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[653, 390]+')');
 
-                svg.append("rect")
-                    .attr('x', 350)
-                    .attr('y', 430)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', serInjColors[0]);
+                svg.selectAll('.legendRect2')
+                  .data(fatalColors).enter()
+                  .append('rect')
+                  .attr('class', 'legendRect2')
+                  .attr('x', function(d,i) {return 350 + (100*i)})
+                  .attr('y', 430)
+                  .attr('width', 100)
+                  .attr('height', 14)
+                  .attr('fill', function(d,i) {return serInjColors[i]})
+                  .on('mouseover', function(d, i) {
+                      selectLegend(i,'inj');
+                  }).on('mouseout', function(d) {
+                      chartG.selectAll('.square.hidden').classed('hidden', false);
+                      chartG.selectAll('.percentText').remove();
+
+                  });;
 
                 svg.append('text')
                     .text("≤ " + (serInjMax/4).toFixed(2) + "%")
@@ -454,25 +453,11 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[350, 460]+')');
 
-                svg.append("rect")
-                    .attr('x', 450)
-                    .attr('y', 430)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', serInjColors[1]);
-
                 svg.append('text')
                     .text("≤ " + ((serInjMax/4)*2).toFixed(2) + "%")
                     .style('font-size', '12')
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[451, 460]+')');
-
-                svg.append("rect")
-                    .attr('x', 550)
-                    .attr('y', 430)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', serInjColors[2]);
 
                 svg.append('text')
                     .text("≤ " + ((serInjMax/4)*3).toFixed(2) + "%")
@@ -480,19 +465,30 @@ d3.csv('./aircraft_incidents.csv',
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[552, 460]+')');
 
-                svg.append("rect")
-                    .attr('x', 650)
-                    .attr('y', 430)
-                    .attr('width', 100)
-                    .attr('height', 14)
-                    .attr('fill', serInjColors[3]);
-
                 svg.append('text')
                     .text("≤ " + (serInjMax).toFixed(2) + "%")
                     .style('font-size', '12')
                     .style('font-weight', 400)
                         .attr('transform', 'translate('+[653, 460]+')');
     });
+
+function selectLegend(i, key) {
+  if (key == 'fatal') {
+    var low = (+fatalPercMax.toFixed(2)/4) * (i);
+    var hi = (+fatalPercMax.toFixed(2)/4) * (i+1);
+    var y = 0;
+  } else {
+    var low = (serInjMax.toFixed(2)/4) * (i);
+    var hi = (+serInjMax.toFixed(2)/4) * (i+1);
+    var y = 1;
+  }
+
+  chartG.selectAll('.square')
+    .classed('hidden', function(other, j) {
+      
+      return other.y != y && (other.value >= hi || other.value <= low);
+    });
+}
 
 function select(d) {
   var o = null;
